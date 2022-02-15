@@ -11,6 +11,6 @@ const MONGO_URL = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_BASE_UR
 
 mongoose.connect(MONGO_URL).then(async () => {
   app.listen(PORT, () => {
-    console.log('hospital backend app listening on', PORT);
+    console.log('connectsport backend app listening on', PORT);
   });
 });
