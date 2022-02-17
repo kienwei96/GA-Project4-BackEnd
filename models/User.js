@@ -4,7 +4,7 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 const UserSchema = mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    default: 'player',
   },
   email: {
     type: String,
@@ -12,7 +12,6 @@ const UserSchema = mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
   },
   date: {
     type: Date,
@@ -25,6 +24,10 @@ const UserSchema = mongoose.Schema({
   role: {
     type: String,
     default: 'user',
+  },
+  googleId: {
+    required: false,
+    type: String,
   },
 });
 
