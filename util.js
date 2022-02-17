@@ -9,7 +9,7 @@ const createToken = (user) => {
   return jwt.sign(
     {
       sub: user._id,
-      loginID: user.loginID,
+      email: user.email,
       role: user.role,
       iss: 'api.sport',
       aud: 'api.sport',
