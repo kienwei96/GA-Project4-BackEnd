@@ -1,5 +1,6 @@
 //DEPENDENCIES
 require('dotenv').config();
+const passport = require('passport');
 // const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('express-jwt');
@@ -7,6 +8,7 @@ const jwtDecode = require('jwt-decode');
 const express = require('express');
 const app = express();
 const methodOverride = require('method-override');
+const User = require('./models/User');
 
 //MIDDLEWARE
 // body parser middleware
@@ -24,6 +26,8 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(passport.initialize());
 
 // static files middleware
 app.use(express.static('public'));
@@ -43,25 +47,33 @@ app.use('/api/login', loginController);
 const registerController = require('./controller/register');
 app.use('/api/register', registerController);
 
+// google login controller
+const googleLogin = require('./controller/googleLogin');
+app.use('/api/googleLogin', googleLogin);
+
+// create profile controller
+const createProfile = require('./controller/profile');
+app.use('/api/profile', createProfile);
+
 // attach user to the Request object/api
-// const attachUser = (req, res, next) => {
-//   const token = req.headers.authorization;
-//   if (!token) {
-//     return res.status(401).json({ message: 'Authentication invalid' });
-//   }
+const attachUser = (req, res, next) => {
+  const token = req.headers.authorization;
+  if (!token) {
+    return res.status(401).json({ message: 'Authentication invalid' });
+  }
 
-//   const decodedToken = jwtDecode(token.slice(7));
+  const decodedToken = jwtDecode(token.slice(7));
 
-//   if (!decodedToken) {
-//     return res
-//       .status(401)
-//       .json({ message: 'There was a problem authorizing the request' });
-//   } else {
-//     req.user = decodedToken;
-//     next();
-//   }
-// };
+  if (!decodedToken) {
+    return res
+      .status(401)
+      .json({ message: 'There was a problem authorizing the request' });
+  } else {
+    req.user = decodedToken;
+    next();
+  }
+};
 
-// app.use(attachUser);
+app.use(attachUser);
 
 module.exports = app;
