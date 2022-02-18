@@ -58,6 +58,9 @@ router.post('/', async (req, res) => {
         name,
         email,
         role,
+        setProfile,
+        user_id,
+        _id,
       };
 
       return res.json({

@@ -20,11 +20,6 @@ router.get('/test', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { errors, isValid } = validateLoginInput(req.body);
-    if (!isValid) {
-      return res.status(400).json(errors);
-    }
-
     const { email, password } = req.body;
 
     const user = await User.findOne({

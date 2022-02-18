@@ -64,9 +64,19 @@ router.get('/:_id', async (req, res) => {
   // console.log(userProfile);
   // res.status(200).send({ message: 'New Profile is added successfully!' });
   console.log(req.params._id);
-  const userProfile = await Profile.findById(req.params._id);
-  console.log(userProfile);
-  res.status(200).send({ userProfile });
+
+  try {
+    const userProfile = await Profile.findById(req.params._id);
+    if (userProfile) {
+      console.log(userProfile);
+      res.status(200).send({ userProfile });
+    } else {
+      res.status(200).send({ userProfile });
+    }
+  } catch {
+    res.status(500).send({ message: 'Unexpected Error' });
+    return;
+  }
 });
 
 module.exports = router;
