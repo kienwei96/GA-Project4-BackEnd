@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
       const decodedToken = jwtDecode(token);
       const expiresAt = decodedToken.exp;
 
-      const { name, email, role } = savedUser;
+      const { name, email, role, setProfile, user_id, _id } = savedUser;
 
       const userInfo = {
         name,
