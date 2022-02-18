@@ -55,6 +55,10 @@ app.use('/api/googleLogin', googleLogin);
 const createProfile = require('./controller/profile');
 app.use('/api/profile', createProfile);
 
+// create event controller
+const createEvent = require('./controller/event');
+app.use('/api/event', createEvent);
+
 // attach user to the Request object/api
 const attachUser = (req, res, next) => {
   const token = req.headers.authorization;
