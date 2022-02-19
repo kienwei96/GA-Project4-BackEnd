@@ -9,6 +9,64 @@ const User = require('../models/User');
 const Event = require('../models/Event');
 const validateEventInput = require('../validation/event');
 
+// get all event
+router.get('/events/all', async (req, res) => {
+  try {
+    const allEvent = await Event.find({})
+      .populate('user', ['name'])
+      .sort({ startDate: 'asc' });
+    console.log(allEvent);
+
+    res.json(allEvent);
+    return;
+  } catch (error) {
+    res.status(403).send({ message: `Error in get api/events/all.` + error });
+    return;
+  }
+});
+
+// get filtered event by sport
+router.get('/events/sportType', async (req, res) => {
+  try {
+    const filteredEvent = await Event.find(
+      req.query.sport ? { sport: req.query.sport } : { sport: 'all' }
+    )
+      .populate('user', ['name'])
+      .sort({ startDate: 'asc' });
+    console.log(filteredEvent);
+
+    res.json(filteredEvent);
+    return;
+  } catch (error) {
+    res
+      .status(403)
+      .send({ message: `Error in get api/events/${sport}.` + error });
+    return;
+  }
+});
+
+// get filtered event by vaccination status
+router.get('/events/vaccinationStatus', async (req, res) => {
+  try {
+    const filteredEvent = await Event.find(
+      req.query.vaccination
+        ? { vaccination: req.query.vaccination }
+        : { vaccination: 'Yes' }
+    )
+      .populate('user', ['name'])
+      .sort({ startDate: 'asc' });
+    console.log(filteredEvent);
+
+    res.json(filteredEvent);
+    return;
+  } catch (error) {
+    res
+      .status(403)
+      .send({ message: `Error in get api/events/${vaccination}.` + error });
+    return;
+  }
+});
+
 // create event
 router.post('/new', async (req, res) => {
   try {
