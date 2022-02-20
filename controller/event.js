@@ -15,9 +15,23 @@ router.get('/events/all', async (req, res) => {
     const allEvent = await Event.find({})
       .populate('user', ['name'])
       .sort({ startDate: 'asc' });
-    console.log(allEvent);
 
     res.json(allEvent);
+    return;
+  } catch (error) {
+    res.status(403).send({ message: `Error in get api/events/all.` + error });
+    return;
+  }
+});
+
+// get all event
+router.get('/eventDetails/:id', async (req, res) => {
+  try {
+    const eventDetail = await Event.findById(req.params.id)
+      .populate('user', ['name'])
+      .sort({ startDate: 'asc' });
+
+    res.json(eventDetail);
     return;
   } catch (error) {
     res.status(403).send({ message: `Error in get api/events/all.` + error });
@@ -33,7 +47,6 @@ router.get('/events/sportType', async (req, res) => {
     )
       .populate('user', ['name'])
       .sort({ startDate: 'asc' });
-    console.log(filteredEvent);
 
     res.json(filteredEvent);
     return;
@@ -55,7 +68,6 @@ router.get('/events/vaccinationStatus', async (req, res) => {
     )
       .populate('user', ['name'])
       .sort({ startDate: 'asc' });
-    console.log(filteredEvent);
 
     res.json(filteredEvent);
     return;
@@ -77,8 +89,6 @@ router.post('/new', async (req, res) => {
       return res.status(400).json(errors);
     }
 
-    console.log(req.body);
-
     const eventFields = {};
     eventFields.user = req.body._id;
 
@@ -90,8 +100,6 @@ router.post('/new', async (req, res) => {
     if (req.body.level) eventFields.level = req.body.level;
     if (req.body.startDate) eventFields.startDate = req.body.startDate;
     if (req.body.description) eventFields.description = req.body.description;
-
-    console.log('eventField', eventFields);
 
     const newEvent = await Event.create(eventFields);
 
