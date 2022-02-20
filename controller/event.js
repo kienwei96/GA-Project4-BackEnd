@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const User = require('../models/User');
 const Event = require('../models/Event');
 const validateEventInput = require('../validation/event');
+const { update } = require('../models/User');
 
 // get all event
 router.get('/events/all', async (req, res) => {
@@ -113,6 +114,42 @@ router.post('/new', async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: 'Unexpected Error' });
+    return;
+  }
+});
+
+//  add player to the event
+router.post('/events/join/:eventID/:userID', async (req, res) => {
+  // console.log('event id params is', req.params.eventID);
+  // console.log('user id params is', req.params.userID);
+  // res.send('Success!');
+  // return;
+  try {
+    const PlayerToJoin = await User.findById(req.params.userID);
+    const EventToJoin = await Event.findById(req.params.eventID);
+
+    let count = 0;
+
+    for (let i of EventToJoin.listofplayer) {
+      console.log('i', i['_id']);
+      if (String(i['_id']) === String(PlayerToJoin._id)) {
+        return res.status(400).json({ error: 'You already join this event' });
+      }
+      count++;
+    }
+
+    if (count >= EventToJoin.player) {
+      return res.status(400).json({ error: 'This event is full' });
+    }
+
+    const UpdateEvent = await Event.findByIdAndUpdate(req.params.eventID, {
+      $push: { listofplayer: PlayerToJoin },
+    });
+
+    res.status(200).send({ message: 'Joined event successfully!' });
+    return;
+  } catch (error) {
+    res.status(403).send({ message: `Event is not found!`, error });
     return;
   }
 });
