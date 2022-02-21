@@ -25,7 +25,7 @@ router.get('/events/all', async (req, res) => {
   }
 });
 
-// get all event
+// get event by event id
 router.get('/eventDetails/:id', async (req, res) => {
   try {
     const eventDetail = await Event.findById(req.params.id)
@@ -36,6 +36,40 @@ router.get('/eventDetails/:id', async (req, res) => {
     return;
   } catch (error) {
     res.status(403).send({ message: `Error in get api/events/all.` + error });
+    return;
+  }
+});
+
+// get event by event user id for joined event page
+router.get('/events/joinedEvent/:id', async (req, res) => {
+  try {
+    const eventDetail = await Event.find({
+      'listofplayer._id': { $in: req.params.id },
+    })
+      .populate('user', ['name'])
+      .sort({ startDate: 'asc' });
+
+    res.json(eventDetail);
+    return;
+  } catch (error) {
+    res.status(403).send({ message: `Error in get api/events/all.` + error });
+    return;
+  }
+});
+
+// get event by event user id for my event page
+router.get('/events/myEvent/:id', async (req, res) => {
+  try {
+    const eventDetail = await Event.find({
+      user: req.params.id,
+    })
+      .populate('user', ['name'])
+      .sort({ startDate: 'asc' });
+
+    res.json(eventDetail);
+    return;
+  } catch (error) {
+    res.status(403).send({ message: `Error in getting data` + error });
     return;
   }
 });
@@ -120,10 +154,6 @@ router.post('/new', async (req, res) => {
 
 //  add player to the event
 router.post('/events/join/:eventID/:userID', async (req, res) => {
-  // console.log('event id params is', req.params.eventID);
-  // console.log('user id params is', req.params.userID);
-  // res.send('Success!');
-  // return;
   try {
     const PlayerToJoin = await User.findById(req.params.userID);
     const EventToJoin = await Event.findById(req.params.eventID);
@@ -150,6 +180,40 @@ router.post('/events/join/:eventID/:userID', async (req, res) => {
     return;
   } catch (error) {
     res.status(403).send({ message: `Event is not found!`, error });
+    return;
+  }
+});
+
+// get event by event user id for my event page
+router.delete('/myEvent/delete/:id', async (req, res) => {
+  try {
+    const deleteEvent = await Event.findByIdAndDelete(req.params.id);
+
+    res.json(deleteEvent);
+    return;
+  } catch (error) {
+    res.status(403).send({ message: `Event not found, delete unsuccessful` });
+    return;
+  }
+});
+
+// get event by event user id for my event page
+router.put('/joinedEvent/delete/:eventID/:userID', async (req, res) => {
+  try {
+    const PlayerToDelete = await User.findById(req.params.userID);
+    const theEvent = await Event.findById(req.params.eventID);
+    const UpdateEvent = await Event.findByIdAndUpdate(req.params.eventID, {
+      $pull: {
+        listofplayer: { _id: req.params.userID },
+      },
+    });
+    console.log(UpdateEvent);
+    res.json(UpdateEvent);
+    return;
+  } catch (error) {
+    res
+      .status(403)
+      .send({ message: `Event not found, un-joined unsuccessful` });
     return;
   }
 });
